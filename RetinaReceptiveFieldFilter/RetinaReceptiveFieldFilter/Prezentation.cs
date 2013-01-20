@@ -1,19 +1,20 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Drawing;
-using System.Threading;
 using System.Windows.Forms;
-using AForge.Imaging.Filters;
 using AForge.Video;
 using AForge.Video.DirectShow;
+using RetinaReceptiveFieldFilter.Color;
 
 namespace RetinaReceptiveFieldFilter
 {
     public partial class Prezentation : Form
     {
-        private readonly FastSquareRetinaRfFilter _fastRf = new FastSquareRetinaRfFilter();
-        private readonly RoundRetinaRfFilter _roundRf = new RoundRetinaRfFilter();
-        private readonly SquareRetinaRfFilter _squareRf = new SquareRetinaRfFilter();
+        private readonly FastSquareWhiteBlackRetinaFilter _fastRf = new FastSquareWhiteBlackRetinaFilter();
+        private readonly RoundWhiteBlackRetinaFilter _roundRf = new RoundWhiteBlackRetinaFilter();
+        private readonly SquareWhiteBalckRetinaFilter _squareRf = new SquareWhiteBalckRetinaFilter();
+        private readonly RoundRedGreenRetinaFilter _roundredGreenRf = new RoundRedGreenRetinaFilter();
+        private readonly HueFilter _hueFilter = new HueFilter();
         private int _frames;
         private Bitmap _grayImage;
         private bool _processing;
@@ -45,9 +46,18 @@ namespace RetinaReceptiveFieldFilter
                 lock (this)
                 {
                     _processing = true;
-                    _grayImage = Grayscale.CommonAlgorithms.BT709.Apply(eventArgs.Frame);
-                    _fastRf.ApplyInPlace(_grayImage, new Rectangle(325, 225, 200, 200));
-                    drawArea.Image = _grayImage;
+
+                    var image = (Bitmap)eventArgs.Frame.Clone();
+
+
+                    _hueFilter.ApplyInPlace(image, new Rectangle(325, 225, 200, 200));
+                    _roundredGreenRf.ApplyInPlace(image,new Rectangle(325, 225, 200, 200));
+                    
+                    //_grayImage = Grayscale.CommonAlgorithms.BT709.Apply(eventArgs.Frame);
+                    //_fastRf.ApplyInPlace(_grayImage, new Rectangle(325, 225, 200, 200));
+                    //drawArea.Image = _grayImage;
+
+                    drawArea.Image = image;
                     _frames++;
                     _processing = false;
                 }

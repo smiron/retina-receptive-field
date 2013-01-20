@@ -39,7 +39,7 @@
             // 
             this.drawArea.Location = new System.Drawing.Point(0, 0);
             this.drawArea.Name = "drawArea";
-            this.drawArea.Size = new System.Drawing.Size(652, 501);
+            this.drawArea.Size = new System.Drawing.Size(800, 600);
             this.drawArea.TabIndex = 0;
             this.drawArea.TabStop = false;
             // 
@@ -60,7 +60,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(664, 513);
+            this.ClientSize = new System.Drawing.Size(806, 606);
             this.Controls.Add(this.cameraFpsLabel);
             this.Controls.Add(this.drawArea);
             this.Name = "Prezentation";
