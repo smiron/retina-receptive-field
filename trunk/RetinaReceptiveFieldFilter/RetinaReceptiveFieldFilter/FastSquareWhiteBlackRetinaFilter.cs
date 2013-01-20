@@ -7,11 +7,14 @@ using AForge.Imaging.Filters;
 
 namespace RetinaReceptiveFieldFilter
 {
-    public class RoundRetinaRfFilter : BaseUsingCopyPartialFilter
+    public class FastSquareWhiteBlackRetinaFilter : BaseUsingCopyPartialFilter
     {
         #region Fields
 
         private readonly Dictionary<PixelFormat, PixelFormat> _formatTranslations = new Dictionary<PixelFormat, PixelFormat>();
+
+        private int[] _centerArray;
+        private int[] _outerArray;
 
         #endregion
 
@@ -24,17 +27,18 @@ namespace RetinaReceptiveFieldFilter
 
         public int SmallRadius { get; set; }
 
-        public int LargeRadius { get; set; }
+        public int largeRadius { get; set; }
 
 
         #endregion
 
         #region Instance
 
-        public RoundRetinaRfFilter()
+        public FastSquareWhiteBlackRetinaFilter()
         {
             _formatTranslations[PixelFormat.Format8bppIndexed] = PixelFormat.Format8bppIndexed;
             SmallRadius = 2;
+            
         }
 
         #endregion
@@ -62,41 +66,47 @@ namespace RetinaReceptiveFieldFilter
             // allign pointers
             src += srcStride * startY + startX;
             dst += dstStride * startY + startX;
+            
+            if (_centerArray == null)
+            {
+                var list = GetPositions(srcStride, 1);
+                list.AddRange(GetPositions(srcStride, 2));
+                _centerArray = list.ToArray();
+            }
 
+            if (_outerArray == null)
+            {
+                var list = GetPositions(srcStride, 3);
+                list.AddRange(GetPositions(srcStride, 4));
+                list.AddRange(GetPositions(srcStride, 5));
+                _outerArray = list.ToArray();
+            }
+            
+             SmallRadius = 2;
+            largeRadius = 10;
 
-            SmallRadius = 2;
-            LargeRadius = 4;
-            var smallRadiusSquare = SmallRadius * SmallRadius;
-            var largeRadiusSquare = LargeRadius * LargeRadius;
-
-
+            
             // for each line
             for (int y = startY; y < stopY; y++)
             {
                 // for each pixel
                 for (int x = startX; x < stopX; x++, src++, dst++)
                 {
-                    if (y > LargeRadius && y < (stopY - LargeRadius) && x > LargeRadius && x < (stopX - LargeRadius))
+                    if (y > largeRadius && y < (stopY - largeRadius) && x > largeRadius && x < (stopX - largeRadius))
                     {
-                        var center = 0;
-                        var outer = 0;
-                        for (int i = -LargeRadius; i < LargeRadius; i++)
+                        int center = 0;
+                        for (int i = 0; i < _centerArray.Length; i++)
                         {
-                            for (int j = -LargeRadius; j < LargeRadius; j++)
-                            {
-                                int r = (i * i + j * j);
-                                if (r < (smallRadiusSquare))
-                                {
-                                    center = (center + src[j * srcStride + i]) / 2;
-
-                                }
-                                else if (r < (largeRadiusSquare))
-                                {
-                                    outer = (outer + src[j * srcStride + i]) / 2;
-                                }
-                            }
+                            center += src[_centerArray[i]];
                         }
-                        *dst = (byte)Math.Max(0, Math.Min(255, (center - outer + 128)));
+                        
+                        int outer = 0;
+                        for (int i = 0; i < _outerArray.Length; i++)
+                        {
+                            outer += src[_outerArray[i]];
+                        }
+
+                        *dst = (byte)Math.Max(0, Math.Min(255, ( Math.Abs(center / _centerArray.Length - outer / _outerArray.Length) + 50)));
                     }
                 }
                 src += srcOffset;
@@ -106,7 +116,32 @@ namespace RetinaReceptiveFieldFilter
             // draw black rectangle to remove those pixels, which were not processed
             // (this needs to be done for those cases, when filter is applied "in place" -
             // source image is modified instead of creating new copy)
-            Drawing.Rectangle(destination, rect, Color.Black);
+            Drawing.Rectangle(destination, rect, System.Drawing.Color.Black);
+        }
+
+        private List<int> GetPositions(int stride, int row)
+        {
+
+            var result = new List<int>();
+            int lRadius = row;
+            int sRadius = row-1;
+
+
+            for (int i = -lRadius; i < lRadius; i++)
+            {
+                for (int j = -lRadius; j < lRadius; j++)
+                {
+                    if (Math.Abs(i) < sRadius && Math.Abs(j) < sRadius)
+                    {
+
+                    }
+                    else if (Math.Abs(i) < lRadius && Math.Abs(j) < lRadius)
+                    {
+                        result.Add(stride * j + i);
+                    }
+                }
+            }
+            return result;
         }
 
         #endregion

@@ -7,7 +7,7 @@ using AForge.Imaging.Filters;
 
 namespace RetinaReceptiveFieldFilter
 {
-    public class SquareRetinaRfFilter : BaseUsingCopyPartialFilter
+    public class SquareWhiteBalckRetinaFilter : BaseUsingCopyPartialFilter
     {
          #region Fields
 
@@ -24,14 +24,14 @@ namespace RetinaReceptiveFieldFilter
 
         public int SmallRadius { get; set; }
 
-        public int LargeRadius { get; set; }
+        public int largeRadius { get; set; }
 
 
         #endregion
 
         #region Instance
 
-        public SquareRetinaRfFilter()
+        public SquareWhiteBalckRetinaFilter()
         {
             _formatTranslations[PixelFormat.Format8bppIndexed] = PixelFormat.Format8bppIndexed;
             SmallRadius = 2;
@@ -65,7 +65,7 @@ namespace RetinaReceptiveFieldFilter
 
 
             SmallRadius = 2;
-            LargeRadius = 4;
+            largeRadius = 4;
          
             // for each line
             for (int y = startY; y < stopY; y++)
@@ -73,20 +73,20 @@ namespace RetinaReceptiveFieldFilter
                 // for each pixel
                 for (int x = startX; x < stopX; x++, src++, dst++)
                 {
-                    if (y > LargeRadius && y < (stopY - LargeRadius) && x > LargeRadius && x < (stopX - LargeRadius))
+                    if (y > largeRadius && y < (stopY - largeRadius) && x > largeRadius && x < (stopX - largeRadius))
                     {
                         var center = 0;
                         var outer = 0;
-                        for (int i = -LargeRadius; i < LargeRadius; i++)
+                        for (int i = -largeRadius; i < largeRadius; i++)
                         {
-                            for (int j = -LargeRadius; j < LargeRadius; j++)
+                            for (int j = -largeRadius; j < largeRadius; j++)
                             {
                                 if ( Math.Abs(i) < SmallRadius && Math.Abs(j) < SmallRadius)
                                 {
                                     center = (center + src[j * srcStride + i]) / 2;
 
                                 }
-                                else if ( Math.Abs(i) < LargeRadius && Math.Abs(j) < LargeRadius)
+                                else if ( Math.Abs(i) < largeRadius && Math.Abs(j) < largeRadius)
                                 {
                                     outer = (outer + src[j * srcStride + i]) / 2;
                                 }
@@ -102,7 +102,7 @@ namespace RetinaReceptiveFieldFilter
             // draw black rectangle to remove those pixels, which were not processed
             // (this needs to be done for those cases, when filter is applied "in place" -
             // source image is modified instead of creating new copy)
-            Drawing.Rectangle(destination, rect, Color.Black);
+            Drawing.Rectangle(destination, rect, System.Drawing.Color.Black);
         }
 
         #endregion

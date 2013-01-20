@@ -62,8 +62,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FastSquareRetinaRfFilter.cs" />
-    <Compile Include="RoundRetinaRfFilter.cs" />
+    <Compile Include="Color\HueFilter.cs" />
+    <Compile Include="Color\RoundRedGreenRetinaFilter.cs" />
+    <Compile Include="FastSquareWhiteBlackRetinaFilter.cs" />
+    <Compile Include="RoundWhiteBlackRetinaFilter.cs" />
     <Compile Include="Prezentation.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -72,7 +74,7 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SquareRetinaRfFilter.cs" />
+    <Compile Include="SquareWhiteBalckRetinaFilter.cs" />
     <EmbeddedResource Include="Prezentation.resx">
       <DependentUpon>Prezentation.cs</DependentUpon>
     </EmbeddedResource>
