@@ -83,7 +83,7 @@ namespace RetinaReceptiveFieldFilter
             }
             
              SmallRadius = 2;
-            largeRadius = 10;
+            largeRadius = 5;
 
             
             // for each line
@@ -106,7 +106,7 @@ namespace RetinaReceptiveFieldFilter
                             outer += src[_outerArray[i]];
                         }
 
-                        *dst = (byte)Math.Max(0, Math.Min(255, ( Math.Abs(center / _centerArray.Length - outer / _outerArray.Length) + 50)));
+                        *dst = (byte)Math.Max(0, Math.Min(255, ( Math.Abs(center / _centerArray.Length - outer / _outerArray.Length))));
                     }
                 }
                 src += srcOffset;
