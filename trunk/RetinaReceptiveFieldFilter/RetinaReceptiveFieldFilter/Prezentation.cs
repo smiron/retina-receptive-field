@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
+using AForge.Imaging.Filters;
 using AForge.Video;
 using AForge.Video.DirectShow;
 using RetinaReceptiveFieldFilter.Color;
@@ -35,8 +36,23 @@ namespace RetinaReceptiveFieldFilter
             _videoSource.NewFrame += VideoSourceNewFrame;
             _videoSource.DesiredFrameRate = 30;
             _videoSource.DesiredFrameSize = new Size(800, 600);
-            timer.Start();
-            _videoSource.Start();
+            //timer.Start();
+            //_videoSource.Start();
+
+            var filter = new BrightnessFilter();
+
+            var image = (Bitmap)Image.FromFile(@"C:\Users\IBM_ADMIN\Desktop\RAW.jpg");
+
+            var a = filter.Apply(image);
+
+            //var gray = _grayImage = Grayscale.CommonAlgorithms.BT709.Apply(image);
+
+            
+
+            var hue = _hueFilter.Apply(image);
+            var b = _fastRf.Apply(hue);
+
+            drawArea.Image = b;
         }
 
         private void VideoSourceNewFrame(object sender, NewFrameEventArgs eventArgs)
@@ -50,7 +66,7 @@ namespace RetinaReceptiveFieldFilter
                     var image = (Bitmap)eventArgs.Frame.Clone();
 
 
-                    _hueFilter.ApplyInPlace(image, new Rectangle(325, 225, 200, 200));
+                    //_hueFilter.ApplyInPlace(image, new Rectangle(325, 225, 200, 200));
                     _roundredGreenRf.ApplyInPlace(image,new Rectangle(325, 225, 200, 200));
                     
                     //_grayImage = Grayscale.CommonAlgorithms.BT709.Apply(eventArgs.Frame);
