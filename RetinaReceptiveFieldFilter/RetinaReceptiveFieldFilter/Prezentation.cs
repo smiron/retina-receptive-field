@@ -39,21 +39,60 @@ namespace RetinaReceptiveFieldFilter
             //timer.Start();
             //_videoSource.Start();
 
+
+            var patterns = GetPixelTemporalPattern(254);
+
+
+
             var filter = new BrightnessFilter();
 
-            var image = (Bitmap)Image.FromFile(@"C:\Users\IBM_ADMIN\Desktop\RAW.jpg");
+            var image = (Bitmap)Image.FromFile(@"C:\Users\IBM_ADMIN\Desktop\CAR.jpg");
 
             var a = filter.Apply(image);
+            var b = _fastRf.Apply(a);
 
-            //var gray = _grayImage = Grayscale.CommonAlgorithms.BT709.Apply(image);
+            for (int i = 0; i < 256; i++)
+            {
+                var c = GetPictureTemporalPattern(i, b);    
+                c.Save(@"C:\temp\Patt11\img"+i.ToString("D3")+".jpg");
+            }
 
             
 
-            var hue = _hueFilter.Apply(image);
-            var b = _fastRf.Apply(hue);
 
-            drawArea.Image = b;
+            //drawArea.Image = c;
         }
+
+        private bool[] GetPixelTemporalPattern(int value)
+        {
+            var result = new bool[256];
+
+            for (int i = 0; i < value; i++)
+            {
+                result[(int)((256 / (double)value) * i)] = true;
+            }
+
+            return result;
+        }
+
+
+
+        private Bitmap GetPictureTemporalPattern(int value, Bitmap image)
+        {
+            Bitmap bitmap = image.Clone(new Rectangle(0, 0, image.Width, image.Height), System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+
+            for (int i = 0; i < image.Width; i++)
+            {
+                for (int j = 0; j < image.Height; j++)
+                {
+                    bitmap.SetPixel(i, j, GetPixelTemporalPattern(bitmap.GetPixel(i, j).B)[value] ? System.Drawing.Color.Black : System.Drawing.Color.White);
+                }
+            }
+
+            return bitmap;
+        }
+
+
 
         private void VideoSourceNewFrame(object sender, NewFrameEventArgs eventArgs)
         {
@@ -67,8 +106,8 @@ namespace RetinaReceptiveFieldFilter
 
 
                     //_hueFilter.ApplyInPlace(image, new Rectangle(325, 225, 200, 200));
-                    _roundredGreenRf.ApplyInPlace(image,new Rectangle(325, 225, 200, 200));
-                    
+                    _roundredGreenRf.ApplyInPlace(image, new Rectangle(325, 225, 200, 200));
+
                     //_grayImage = Grayscale.CommonAlgorithms.BT709.Apply(eventArgs.Frame);
                     //_fastRf.ApplyInPlace(_grayImage, new Rectangle(325, 225, 200, 200));
                     //drawArea.Image = _grayImage;

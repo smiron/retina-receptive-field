@@ -89,7 +89,7 @@ namespace RetinaReceptiveFieldFilter.Color
                         }
                     }
 
-                    var res = (byte)Math.Max(0, Math.Min(255, (center - outer + 128)));
+                    var res = (byte)Math.Max(0, Math.Min(255, (center - outer )));
                     dst[RGB.R] = res;
                     dst[RGB.G] = res;
                     dst[RGB.B] = res;
