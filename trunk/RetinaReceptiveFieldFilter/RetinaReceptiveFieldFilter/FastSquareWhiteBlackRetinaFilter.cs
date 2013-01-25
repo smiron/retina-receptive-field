@@ -106,7 +106,7 @@ namespace RetinaReceptiveFieldFilter
                             outer += src[_outerArray[i]];
                         }
 
-                        *dst = (byte)Math.Max(0, Math.Min(255, ( Math.Abs(center / _centerArray.Length - outer / _outerArray.Length))));
+                        *dst = (byte)Math.Max(0, Math.Min(255, ( Math.Abs(center / _centerArray.Length - outer / _outerArray.Length) + 128)));
                     }
                 }
                 src += srcOffset;
